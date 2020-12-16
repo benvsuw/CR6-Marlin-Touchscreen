@@ -1,0 +1,6 @@
+[submodule "CR-6-touchscreen"]
+	path = CR-6-touchscreen
+	url = git@github.com:CR6Community/CR-6-touchscreen.git
+[submodule "Marlin"]
+	path = Marlin
+	url = git@github.com:CR6Community/Marlin.git
