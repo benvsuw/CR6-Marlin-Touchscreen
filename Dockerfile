@@ -13,6 +13,7 @@ WORKDIR /code/Marlin-extui
 RUN platformio run && \
 	cp /code/Marlin-extui/.pio/build/STM32F103RET6_creality/firmware*.bin /code/firmware.bin && \
 	cp /code/Marlin-extui/.pio/build/STM32F103RET6_creality/firmware*.elf /code/firmware.elf
+CMD du -hs /code/firmware.bin
 
 
 FROM ubuntu:latest as cr6touch-devel
@@ -24,14 +25,18 @@ RUN curl -fsSL https://github.com/CR6Community/CR-6-touchscreen/archive/extui.zi
 	rm extui.zip
 WORKDIR /code/CR-6-touchscreen-extui
 RUN mkdir /code/tmp && \
-	cp -v README.md /code/tmp/README.txt && \
 	cp -rv src/DWIN/DWIN_SET /code/tmp/DWIN_SET && \
-	cp -v src/flash_succesful.jpg src/flash_failed.jpg /code/tmp && \
 	find /code/tmp -name "*.bmp" -exec rm -v {} \; && \
 	find /code/tmp -name "13*.bin" -exec mv -v "{}" "13TouchFile.bin" \; && \
 	find /code/tmp -name "14*.bin" -exec mv -v "{}" "14ShowFile.bin" \; && \
 	cd /code/tmp && \
-	zip -9rv /code/CR-6-touchscreen.zip * && \
+	zip -9rv /code/touchscreen.zip * && \
 	cd /code && \
 	rm -rf /code/tmp
-CMD unzip -l /code/CR-6-touchscreen.zip
+CMD unzip -l /code/touchscreen.zip
+
+
+FROM ubuntu:latest as cr6pkg
+WORKDIR /installer
+COPY --from=0 /code/firmware.bin /installer/CR-6SE-firmware.bin
+COPY --from=1 /code/touchscreen.zip /installer/CR-6SE-touchscreen.zip 
